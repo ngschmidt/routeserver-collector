@@ -4,7 +4,6 @@
 
 # API Processing imports
 import requests
-from requests import HTTPError
 import json
 
 # Command line parsing imports
