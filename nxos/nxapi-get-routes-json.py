@@ -9,9 +9,13 @@ import json
 # Command line parsing imports
 import argparse
 
+# Command line validating imports
+from django.core.validators import URLValidator
+from django.core.exceptions import ValidationError
+
 # Arguments Parsing
 parser = argparse.ArgumentParser(description='NX-API Fetch routing table.')
-parser.add_argument('-t', help='NX-API Target')
+parser.add_argument('nxapi_endpoint')
 parser.add_argument('-u', help='NX-API Username')
 parser.add_argument('-p', help='NX-API Password')
 parser.add_argument('-c', help='Enable NX-API Client Certificate')
@@ -20,13 +24,17 @@ parser.add_argument('--privkey', help='NX-API Client Certificate Private Key. Re
 parser.add_argument('--ca', help='NX-API Client Certificate CA. Optional if using CA Authentication')
 
 args = parser.parse_args()
-print args
 
-"""
-Modify these please
-"""
-#For NXAPI to authenticate the client using client certificate, set 'client_cert_auth' to True.
-#For basic authentication using username & pwd, set 'client_cert_auth' to False.
+# Ensure that NX-API Endpoint is a valid one
+validate = URLValidator()
+try:
+  validate(args.nxapi_endpoint)
+except:
+  print('Invalid URL. Please try a valid URL. Example: "http://10.1.1.1/ins"')
+  exit()
+print(args.nxapi_endpoint)
+
+# Set NX-API Credential Variables
 client_cert_auth=False
 switchuser='admin'
 switchpassword='admin'
@@ -34,7 +42,8 @@ client_cert='PATH_TO_CLIENT_CERT_FILE'
 client_private_key='PATH_TO_CLIENT_PRIVATE_KEY_FILE'
 ca_cert='PATH_TO_CA_CERT_THAT_SIGNED_NXAPI_SERVER_CERT'
 
-url='http://10.7.28.99/ins'
+# Set NX-API URL and payload
+url=args.nxapi_endpoint
 myheaders={'content-type':'application/json'}
 payload={
   "ins_api": {
@@ -47,9 +56,12 @@ payload={
   }
 }
 
+# Perform NX-API Processing - conditional based on certificate authentication
 if client_cert_auth is False:
     response = requests.post(url,data=json.dumps(payload), headers=myheaders,auth=(switchuser,switchpassword)).json()
-#    print json.dumps(response, indent=1, sort_keys=True)
 else:
     url='https://10.7.28.99/ins'
-#    response = requests.post(url,data=json.dumps(payload), headers=myheaders,auth=(switchuser,switchpassword),cert=(client_cert,client_private_key),verify=ca_cert).json()
+    response = requests.post(url,data=json.dumps(payload), headers=myheaders,auth=(switchuser,switchpassword),cert=(client_cert,client_private_key),verify=ca_cert).json()
+
+# Do things with what was received by the API!
+print(json.dumps(response, indent=1, sort_keys=True))

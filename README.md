@@ -18,9 +18,14 @@ Run these python scripts
 
 NX-OS 9.3
 
+### Dependencies
+
+* Django Core. Required for URL/URI Validation and parsing.
+
 ## TODO
 
 * Put into a postgres database or something, historical data is great
+* Secretes management
 * Use YANG instead of a simple table?
 
 ## Authors
