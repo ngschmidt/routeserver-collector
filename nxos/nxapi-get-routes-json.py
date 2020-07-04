@@ -15,13 +15,16 @@ from django.core.exceptions import ValidationError
 
 # Arguments Parsing
 parser = argparse.ArgumentParser(description='Fetch all routing tables via NX-API')
+parser.add_argument('-v', '--verbosity', action='count', default=0, help='Output Verbosity')
+subparsers = parser.add_subparsers(help='Use Basic or CA Authentication')
+unpw = subparsers.add_parser('basic', help='Use Basic Authentication')
+unpw.add_argument('-u', help='NX-API Username')
+unpw.add_argument('-p', help='NX-API Password')
+cert = subparsers.add_parser('ca', help='Use Certificate Authentication')
+cert.add_argument('--cert', help='NX-API Client Certificate. Required if using CA Authentication')
+cert.add_argument('--privkey', help='NX-API Client Certificate Private Key. Required if using CA Authentication')
+cert.add_argument('--ca', help='NX-API Client Certificate CA. Optional if using CA Authentication')
 parser.add_argument('nxapi_endpoint', help='The NX-API Endpoint to target with this API call')
-parser.add_argument('-u', help='NX-API Username')
-parser.add_argument('-p', help='NX-API Password')
-parser.add_argument('-c', help='Enable NX-API Client Certificate', action='store_true')
-parser.add_argument('--cert', help='NX-API Client Certificate. Required if using CA Authentication')
-parser.add_argument('--privkey', help='NX-API Client Certificate Private Key. Required if using CA Authentication')
-parser.add_argument('--ca', help='NX-API Client Certificate CA. Optional if using CA Authentication')
 
 args = parser.parse_args()
 
@@ -41,7 +44,7 @@ except:
 # Password (I know. this needs to be fixed later.)
 #print(args.p)
 # Certificate Auth - Enable CA Auth
-print(args.c)
+#print(args.verbosity)
 # Auth Certificate - Select Certificate
 #print(args.cert)
 # Private Key
@@ -51,13 +54,14 @@ print(args.c)
 
 # Set NX-API Credential Variables
 client_cert_auth=False
-switchuser='admin'
-switchpassword='admin'
+switchuser=args.u
+switchpassword=args.p
 client_cert='PATH_TO_CLIENT_CERT_FILE'
 client_private_key='PATH_TO_CLIENT_PRIVATE_KEY_FILE'
 ca_cert='PATH_TO_CA_CERT_THAT_SIGNED_NXAPI_SERVER_CERT'
 
 # Set NX-API URL and payload
+# Note: default API URI endpoint for NX-OS is /ins
 url=args.nxapi_endpoint
 myheaders={'content-type':'application/json'}
 payload={
