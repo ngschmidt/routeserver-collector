@@ -20,6 +20,7 @@ NX-OS 9.3
 
 ### Dependencies
 
+* Python 3.
 * Django Core. Required for URL/URI Validation and parsing.
 
 ## TODO
