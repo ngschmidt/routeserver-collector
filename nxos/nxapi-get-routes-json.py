@@ -1,5 +1,26 @@
+### NX-OS API Route Table Parser
+### Nicholas Schmidt
+### 04 Jun 2020
+
+# API Processing imports
 import requests
 import json
+
+# Command line parsing imports
+import argparse
+
+# Arguments Parsing
+parser = argparse.ArgumentParser(description='NX-API Fetch routing table.')
+parser.add_argument('-t', help='NX-API Target')
+parser.add_argument('-u', help='NX-API Username')
+parser.add_argument('-p', help='NX-API Password')
+parser.add_argument('-c', help='Enable NX-API Client Certificate')
+parser.add_argument('--cert', help='NX-API Client Certificate. Required if using CA Authentication')
+parser.add_argument('--privkey', help='NX-API Client Certificate Private Key. Required if using CA Authentication')
+parser.add_argument('--ca', help='NX-API Client Certificate CA. Optional if using CA Authentication')
+
+args = parser.parse_args()
+print args
 
 """
 Modify these please
@@ -28,9 +49,7 @@ payload={
 
 if client_cert_auth is False:
     response = requests.post(url,data=json.dumps(payload), headers=myheaders,auth=(switchuser,switchpassword)).json()
-    print json.dumps(response, indent=1, sort_keys=True)
-    for ipprefix in response
-        print ipprefix
+#    print json.dumps(response, indent=1, sort_keys=True)
 else:
     url='https://10.7.28.99/ins'
-    response = requests.post(url,data=json.dumps(payload), headers=myheaders,auth=(switchuser,switchpassword),cert=(client_cert,client_private_key),verify=ca_cert).json()
+#    response = requests.post(url,data=json.dumps(payload), headers=myheaders,auth=(switchuser,switchpassword),cert=(client_cert,client_private_key),verify=ca_cert).json()
