@@ -29,6 +29,8 @@ payload={
 if client_cert_auth is False:
     response = requests.post(url,data=json.dumps(payload), headers=myheaders,auth=(switchuser,switchpassword)).json()
     print json.dumps(response, indent=1, sort_keys=True)
+    for ipprefix in response
+        print ipprefix
 else:
     url='https://10.7.28.99/ins'
     response = requests.post(url,data=json.dumps(payload), headers=myheaders,auth=(switchuser,switchpassword),cert=(client_cert,client_private_key),verify=ca_cert).json()
