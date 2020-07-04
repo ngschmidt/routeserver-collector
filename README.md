@@ -22,6 +22,8 @@ NX-OS 9.3
 
 * Python 3.
 * Django Core. Required for URL/URI Validation and parsing.
+* Requests. You can't really make API calls without it.
+* JSON. NX-API speaks json, so we need parsers.
 
 ## TODO
 

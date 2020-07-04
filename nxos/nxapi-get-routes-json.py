@@ -4,6 +4,7 @@
 
 # API Processing imports
 import requests
+from requests import HTTPError
 import json
 
 # Command line parsing imports
@@ -76,11 +77,14 @@ payload={
 }
 
 # Perform NX-API Processing - conditional based on certificate authentication
-if client_cert_auth is False:
+try:
+  if client_cert_auth is False:
     response = requests.post(url,data=json.dumps(payload), headers=myheaders,auth=(switchuser,switchpassword)).json()
-else:
+  else:
     url='https://10.7.28.99/ins'
     response = requests.post(url,data=json.dumps(payload), headers=myheaders,auth=(switchuser,switchpassword),cert=(client_cert,client_private_key),verify=ca_cert).json()
-
+  print(response.status_code)
+except:
+  print('An error has occurred!')
 # Do things with what was received by the API!
 #print(json.dumps(response, indent=1, sort_keys=True))
