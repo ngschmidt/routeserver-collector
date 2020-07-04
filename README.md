@@ -6,8 +6,8 @@ Collect a table of routes from specific devices, and convert to a simple format 
 
 ## Table Format
 
-|Device	|vrf/RT/RD	|Network	|Type	|Nexthop	|
-|---	|---	|---	|---	|---	|
+|Device|Route Table|Network|Type|Nexthop|
+|---|---|---|---|---|
 |Lab-1  |default    |1.1.1.1/32 |Static |None   |
 
 ## To use these examples
