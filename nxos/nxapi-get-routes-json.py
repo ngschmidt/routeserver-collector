@@ -76,14 +76,21 @@ payload={
 }
 
 # Perform NX-API Processing - conditional based on certificate authentication
-try:
+try: 
   if client_cert_auth is False:
-    response = requests.post(url,data=json.dumps(payload), headers=myheaders,auth=(switchuser,switchpassword)).json()
+    response = requests.post(url,data=json.dumps(payload), headers=myheaders,auth=(switchuser,switchpassword))
   else:
     url='https://10.7.28.99/ins'
-    response = requests.post(url,data=json.dumps(payload), headers=myheaders,auth=(switchuser,switchpassword),cert=(client_cert,client_private_key),verify=ca_cert).json()
-  print(response.status_code)
+    response = requests.post(url,data=json.dumps(payload), headers=myheaders,auth=(switchuser,switchpassword),cert=(client_cert,client_private_key),verify=ca_cert)
+  #response_json = response
+  response.raise_for_status()
 except:
-  print('An error has occurred!')
+  httperrors = {
+    401: ' HTTP Authentication Failed!'
+  }
+  if httperrors.get(response.status_code):
+    print ('HTTP Status Error ' + str(response.status_code) + httperrors.get(response.status_code))
+  else:
+    print ('Unhandled HTTP Error ' + str(response.status_code) + '!' )
 # Do things with what was received by the API!
 #print(json.dumps(response, indent=1, sort_keys=True))
