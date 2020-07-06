@@ -139,4 +139,4 @@ except:
   else:
     print ('Unhandled HTTP Error ' + str(response.status_code) + '!' )
 # Do things with what was received by the API!
-#print(json.dumps(response, indent=1, sort_keys=True))
+print(response.text)
