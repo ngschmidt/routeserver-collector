@@ -128,7 +128,7 @@ payload={
     "output_format": "json"
   }
 }
-# Perform NX-API Processing - conditional based on certificate authentication
+# Perform NX-API Processing - conditional basic or certificate authentication
 try: 
   if client_cert_auth is False:
     response_response = requests.post(url,data=json.dumps(payload), headers=myheaders,auth=(switchuser,switchpassword))
@@ -145,10 +145,13 @@ except:
   else:
     print ('Unhandled HTTP Error ' + str(response_code) + '!' )
     exit() #interpet the error, then close out so we don't have to put all the rest of our code in an except statement
-# Do things with what was received by the API!
-# print (response_json) #print raw json response
-#print (response_json['ins_api']['outputs']['output']['body']['TABLE_vrf']['ROW_vrf']) #we finally have the route tables set up here
 
+# Begin Processing API Data
+## Debugging shouldn't require code changes, let's use our verbosity switches
+if max(min(args.verbosity,1),0) >= 1:
+      print (response_json) #print raw json response
+
+# iterate through all route tables, and print them
 for i in response_json['ins_api']['outputs']['output']['body']['TABLE_vrf']['ROW_vrf']:
       print(i['vrf-name-out'] + ': ')
       print(i)
