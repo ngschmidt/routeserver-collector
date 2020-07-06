@@ -131,14 +131,20 @@ payload={
 # Perform NX-API Processing - conditional based on certificate authentication
 try: 
   if client_cert_auth is False:
-    response = requests.post(url,data=json.dumps(payload), headers=myheaders,auth=(switchuser,switchpassword))
+    response_response = requests.post(url,data=json.dumps(payload), headers=myheaders,auth=(switchuser,switchpassword))
   else:
-    response = requests.post(url,data=json.dumps(payload), headers=myheaders,auth=(switchuser,switchpassword),cert=(client_cert,client_private_key),verify=ca_cert)
-  response.raise_for_status()
+    response_response = requests.post(url,data=json.dumps(payload), headers=myheaders,auth=(switchuser,switchpassword),cert=(client_cert,client_private_key),verify=ca_cert)
+  response_code = response_response.status_code
+  response_response.raise_for_status()
+  response_json = response_response.json()
 except:
-  if httperrors.get(response.status_code):
-    print ('HTTP Status Error ' + str(response.status_code) + ' ' + httperrors.get(response.status_code)[max(min(args.verbosity,1),0)])
+  if httperrors.get(response_code):
+    print ('HTTP Status Error ' + str(response_code) + ' ' + httperrors.get(response_code)[max(min(args.verbosity,1),0)])
+    exit()
   else:
-    print ('Unhandled HTTP Error ' + str(response.status_code) + '!' )
+    print ('Unhandled HTTP Error ' + str(response_code) + '!' )
+    exit()
 # Do things with what was received by the API!
-print(response.json())
+print (response_json)
+print ('')
+print (response_json['ins_api']['outputs']['output']['code'])
