@@ -152,7 +152,6 @@ try:
   #response_json = response
   response.raise_for_status()
 except:
-
   if httperrors.get(response.status_code):
     print ('HTTP Status Error ' + str(response.status_code) + ' ' + httperrors.get(response.status_code)[max(min(args.verbosity,1),0)])
   else:
