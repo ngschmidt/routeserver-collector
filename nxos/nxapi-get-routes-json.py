@@ -147,4 +147,8 @@ except:
     exit() #interpet the error, then close out so we don't have to put all the rest of our code in an except statement
 # Do things with what was received by the API!
 # print (response_json) #print raw json response
-print (response_json['ins_api']['outputs']['output']['body']['TABLE_vrf']['ROW_vrf']) #we finally have the route tables set up here
+#print (response_json['ins_api']['outputs']['output']['body']['TABLE_vrf']['ROW_vrf']) #we finally have the route tables set up here
+
+for i in response_json['ins_api']['outputs']['output']['body']['TABLE_vrf']['ROW_vrf']:
+      print(i['vrf-name-out'] + ': ')
+      print(i)
