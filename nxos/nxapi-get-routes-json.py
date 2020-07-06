@@ -132,7 +132,6 @@ try:
     response = requests.post(url,data=json.dumps(payload), headers=myheaders,auth=(switchuser,switchpassword))
   else:
     response = requests.post(url,data=json.dumps(payload), headers=myheaders,auth=(switchuser,switchpassword),cert=(client_cert,client_private_key),verify=ca_cert)
-  #response_json = response
   response.raise_for_status()
 except:
   if httperrors.get(response.status_code):
