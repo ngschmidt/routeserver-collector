@@ -36,45 +36,6 @@ except:
   print('Invalid URL. Please try a valid URL. Example: "http://10.1.1.1/ins"')
   exit()
 
-# Import/Test arguments
-# Endpoint
-#print(args.nxapi_endpoint)
-# User
-#print(args.u)
-# Password (I know. this needs to be fixed later.)
-#print(args.p)
-# Certificate Auth - Enable CA Auth
-#print(args.verbosity)
-# Auth Certificate - Select Certificate
-#print(args.cert)
-# Private Key
-#print(args.privkey)
-# Auth Certificate Authority
-#print(args.ca)
-
-# Set NX-API Credential Variables
-client_cert_auth=False
-switchuser=args.u
-switchpassword=args.p
-client_cert='PATH_TO_CLIENT_CERT_FILE'
-client_private_key='PATH_TO_CLIENT_PRIVATE_KEY_FILE'
-ca_cert='PATH_TO_CA_CERT_THAT_SIGNED_NXAPI_SERVER_CERT'
-
-# Set NX-API URL and payload
-# Note: default API URI endpoint for NX-OS is /ins
-url=args.nxapi_endpoint
-myheaders={'content-type':'application/json'}
-payload={
-  "ins_api": {
-    "version": "1.0",
-    "type": "cli_show",
-    "chunk": "0",
-    "sid": "sid",
-    "input": "show ip route vrf all",
-    "output_format": "json"
-  }
-}
-
 # Set HTTP Error + Verbosity table. Due to the use of max(min()), verbosity count becomes a numerical range that caps off and prevents array issues
 # Credit where due - https://gist.github.com/bl4de/3086cf26081110383631 by bl4de
 httperrors = {
@@ -143,6 +104,28 @@ httperrors = {
   505: ('HTTP Version Not Supported', 'Cannot fulfill request.'),
 }
 
+# Set NX-API Credential Variables
+client_cert_auth=False
+switchuser=args.u
+switchpassword=args.p
+client_cert='PATH_TO_CLIENT_CERT_FILE'
+client_private_key='PATH_TO_CLIENT_PRIVATE_KEY_FILE'
+ca_cert='PATH_TO_CA_CERT_THAT_SIGNED_NXAPI_SERVER_CERT'
+
+# Set NX-API URL and payload
+# Note: default API URI endpoint for NX-OS is /ins
+url=args.nxapi_endpoint
+myheaders={'content-type':'application/json'}
+payload={
+  "ins_api": {
+    "version": "1.0",
+    "type": "cli_show",
+    "chunk": "0",
+    "sid": "sid",
+    "input": "show ip route vrf all",
+    "output_format": "json"
+  }
+}
 # Perform NX-API Processing - conditional based on certificate authentication
 try: 
   if client_cert_auth is False:
