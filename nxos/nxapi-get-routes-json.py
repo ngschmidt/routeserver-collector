@@ -1,3 +1,4 @@
+#!/usr/bin/python3
 ### NX-OS API Route Table Parser
 ### Nicholas Schmidt
 ### 04 Jun 2020
@@ -114,6 +115,7 @@ ca_cert='PATH_TO_CA_CERT_THAT_SIGNED_NXAPI_SERVER_CERT'
 
 # Set NX-API URL and payload
 # Note: default API URI endpoint for NX-OS is /ins
+# Input is just an analogue for the CLI in this case, and returns data as json.
 url=args.nxapi_endpoint
 myheaders={'content-type':'application/json'}
 payload={
@@ -139,4 +141,4 @@ except:
   else:
     print ('Unhandled HTTP Error ' + str(response.status_code) + '!' )
 # Do things with what was received by the API!
-print(response.text)
+print(response.json())
