@@ -134,16 +134,17 @@ try:
     response_response = requests.post(url,data=json.dumps(payload), headers=myheaders,auth=(switchuser,switchpassword))
   else:
     response_response = requests.post(url,data=json.dumps(payload), headers=myheaders,auth=(switchuser,switchpassword),cert=(client_cert,client_private_key),verify=ca_cert)
+  # We'll be discarding the actual `Response` object after this, but we do want to get HTTP status for erro handling
   response_code = response_response.status_code
-  response_response.raise_for_status()
-  response_json = response_response.json()
+  response_response.raise_for_status() #trigger an exception before trying to convert or read data. This should allow us to get good error info
+  response_json = response_response.json() #if HTTP status is good, i.e. a 100/200 status code, we're going to convert the response into a json dict
 except:
   if httperrors.get(response_code):
     print ('HTTP Status Error ' + str(response_code) + ' ' + httperrors.get(response_code)[max(min(args.verbosity,1),0)])
-    exit()
+    exit() #interpet the error, then close out so we don't have to put all the rest of our code in an except statement
   else:
     print ('Unhandled HTTP Error ' + str(response_code) + '!' )
-    exit()
+    exit() #interpet the error, then close out so we don't have to put all the rest of our code in an except statement
 # Do things with what was received by the API!
 print (response_json)
 print ('')
