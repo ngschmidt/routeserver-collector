@@ -23,12 +23,14 @@ NX-OS 9.3
 * Python 3.
 * Django Core. Required for URL/URI Validation and parsing.
 * Requests. You can't really make API calls without it.
-* JSON. NX-API speaks json, so we need parsers.
+* JSON
 
 ## TODO
 
-* Put into a postgres database or something, historical data is great
-* Secretes management
+* Put into a postgres/nosql database or something, historical data is great
+* JSON file handles for data inputs
+* JSON schema to define output to generic translation
+* Secrets management
 * Use YANG instead of a simple table?
 
 ## Authors
