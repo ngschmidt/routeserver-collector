@@ -35,7 +35,7 @@ args = parser.parse_args()
 # Attempt to load a json file, and lint it
 try:
     with open(args.f) as json_file:
-        payload = json.load(json_file)
+        api_payload = json.load(json_file)
 except ValueError as err:
     print('Python thinks you have a json formatting issue. Please run your payload input through a json linter.')
     print(err)
@@ -137,6 +137,38 @@ ca_cert='PATH_TO_CA_CERT_THAT_SIGNED_NXAPI_SERVER_CERT'
 url=args.nxapi_endpoint
 myheaders={'content-type':'application/json'}
 
+precheck_payload={
+  "ins_api": {
+    "version": "1.0",
+    "type": "cli_show",
+    "chunk": "0",
+    "sid": "sid",
+    "input": "show version",
+    "output_format": "json"
+  }
+}
+
+# Perform NX-API Processing - conditional basic or certificate authentication
+try: 
+  if client_cert_auth is False:
+    response_response = requests.post(url,data=json.dumps(precheck_payload), headers=myheaders,auth=(switchuser,switchpassword))
+  else:
+    response_response = requests.post(url,data=json.dumps(precheck_payload), headers=myheaders,auth=(switchuser,switchpassword),cert=(client_cert,client_private_key),verify=ca_cert)
+  # We'll be discarding the actual `Response` object after this, but we do want to get HTTP status for erro handling
+  response_code = response_response.status_code
+  response_response.raise_for_status() #trigger an exception before trying to convert or read data. This should allow us to get good error info
+  response_json = response_response.json() #if HTTP status is good, i.e. a 100/200 status code, we're going to convert the response into a json dict
+except:
+  if httperrors.get(response_code):
+    print ('HTTP Status Error ' + str(response_code) + ' ' + httperrors.get(response_code)[max(min(args.verbosity,1),0)])
+    exit() #interpet the error, then close out so we don't have to put all the rest of our code in an except statement
+  else:
+    print ('Unhandled HTTP Error ' + str(response_code) + '!' )
+    exit() #interpet the error, then close out so we don't have to put all the rest of our code in an except statement
+print('Found NX-OS Version! Endpoint Info: ')
+print('System Name: ' + response_json['ins_api']['outputs']['output']['body']['host_name'])
+print('Chassis: ' + response_json['ins_api']['outputs']['output']['body']['chassis_id'])
+print('Version: ' + response_json['ins_api']['outputs']['output']['body']['nxos_ver_str'])
 # Create a JSON file if a developer wants to use this from the python code (it's sometimes easier)
 #with open('payload_show_ip_route_vrf_all.json', 'w') as outfile:
 #    json.dump(payload, outfile)
@@ -144,9 +176,9 @@ myheaders={'content-type':'application/json'}
 # Perform NX-API Processing - conditional basic or certificate authentication
 try: 
   if client_cert_auth is False:
-    response_response = requests.post(url,data=json.dumps(payload), headers=myheaders,auth=(switchuser,switchpassword))
+    response_response = requests.post(url,data=json.dumps(api_payload), headers=myheaders,auth=(switchuser,switchpassword))
   else:
-    response_response = requests.post(url,data=json.dumps(payload), headers=myheaders,auth=(switchuser,switchpassword),cert=(client_cert,client_private_key),verify=ca_cert)
+    response_response = requests.post(url,data=json.dumps(api_payload), headers=myheaders,auth=(switchuser,switchpassword),cert=(client_cert,client_private_key),verify=ca_cert)
   # We'll be discarding the actual `Response` object after this, but we do want to get HTTP status for erro handling
   response_code = response_response.status_code
   response_response.raise_for_status() #trigger an exception before trying to convert or read data. This should allow us to get good error info
