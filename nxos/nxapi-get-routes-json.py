@@ -177,10 +177,12 @@ precheck_payload={
   }
 }
 precheck = do_api_unpw(args.u, args.p, args.nxapi_endpoint, precheck_payload)
-print('Found NX-OS Version! Endpoint Info: ')
-print('System Name: ' + precheck['ins_api']['outputs']['output']['body']['host_name'])
-print('Chassis: ' + precheck['ins_api']['outputs']['output']['body']['chassis_id'])
-print('Version: ' + precheck['ins_api']['outputs']['output']['body']['nxos_ver_str'])
+try:
+      print('Found NX-API Endpoint! System Name: ' + precheck['ins_api']['outputs']['output']['body']['host_name'])
+      print('Chassis: ' + precheck['ins_api']['outputs']['output']['body']['chassis_id'])
+      print('Version: ' + precheck['ins_api']['outputs']['output']['body']['nxos_ver_str'])
+except:
+      print('API Endpoint did not respond to test query with valid data. Please try again on a valid NX-API endpoint.')
 
 # Create a JSON file if a developer wants to use this from the python code (it's sometimes easier)
 #with open('payload_show_ip_route_vrf_all.json', 'w') as outfile:
