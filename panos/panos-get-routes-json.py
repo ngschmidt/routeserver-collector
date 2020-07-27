@@ -140,6 +140,16 @@ def get_xml_from_file(get_xml_from_file_name):
         exit()
 
 
+# Validate XML from string
+def validate_xml_from_string(validate_xml_from_string_string):
+    # Test an import into dict
+    try:
+        return_dict_from_xml = xmltodict.parse(validate_xml_from_string_string, encoding='utf-8')
+    except:
+        print('Invalid XML found! Exiting...')
+        exit()
+    return return_dict_from_xml
+
 # References
 
 # Set HTTP Error + Verbosity table. Due to the use of max(min()), verbosity count becomes a numerical range that caps off and prevents array issues
@@ -256,8 +266,13 @@ except:
     exit()
 
 # Let's try getting an API key first
-session_auth_key = do_api_get_auth_key(args.u, args.p, args.api_endpoint, args.k)
-print(session_auth_key)
+try:
+    session_auth_key = do_api_get_auth_key(args.u, args.p, args.api_endpoint, args.k)
+except:
+    print('Encountered an unhandled issue getting authorization key!')
+    exit()
+print('Generated PAN-OS API Key!')
 
 # Let's try parsing an payload
-print(get_xml_from_file(args.f))
+xml_payload = get_xml_from_file(args.f)
+validate_xml_from_string(xml_payload)
