@@ -57,11 +57,12 @@ def do_api_get_key(do_api_post_auth_key, do_api_post_url, do_api_post_payload, d
     # Perform API Processing - conditional basic authentication
     try:
         do_api_post_headers = {'content-type': 'application/xml'}
+        print(do_api_post_url + do_api_post_payload + '&key=' + do_api_post_auth_key)
         do_api_post_r = requests.get(do_api_post_url + do_api_post_payload + '&key=' + do_api_post_auth_key, headers=do_api_post_headers, verify=do_api_certvalidation)
         # We'll be discarding the actual `Response` object after this, but we do want to get HTTP status for erro handling
         response_code = do_api_post_r.status_code
         do_api_post_r.raise_for_status()  # trigger an exception before trying to convert or read data. This should allow us to get good error info
-        return do_api_post_r.json()  # if HTTP status is good, i.e. a 100/200 status code, we're going to convert the response into a json dict
+        return do_api_post_r.text  # if HTTP status is good, i.e. a 100/200 status code, we're going to convert the response into a json dict
     except requests.Timeout:
         print('API Connection timeout!')
     except requests.ConnectionError as connection_error:
@@ -90,7 +91,7 @@ def do_api_post_key(do_api_post_auth_key, do_api_post_url, do_api_post_payload, 
         # We'll be discarding the actual `Response` object after this, but we do want to get HTTP status for erro handling
         response_code = do_api_post_r.status_code
         do_api_post_r.raise_for_status()  # trigger an exception before trying to convert or read data. This should allow us to get good error info
-        return do_api_post_r.json()  # if HTTP status is good, i.e. a 100/200 status code, we're going to convert the response into a json dict
+        return do_api_post_r.text  # if HTTP status is good, i.e. a 100/200 status code, we're going to convert the response into a json dict
     except requests.Timeout:
         print('API Connection timeout!')
     except requests.ConnectionError as connection_error:
@@ -119,6 +120,11 @@ def do_api_get_auth_key(do_api_get_auth_key_user, do_api_get_auth_key_password, 
         print('An error was encountered while parsing XML API Response!')
         exit()
     return api_response['response']['result']['key']
+
+
+# Do an API Op Command
+def do_api_get_opcmd_key(do_api_opcmd_auth_key, do_api_opcmd_url, do_api_opcmd_payload, do_api_certvalidation):
+    return do_api_get_key(do_api_opcmd_auth_key, do_api_opcmd_url, '/?type=op&cmd=' + do_api_opcmd_payload, do_api_certvalidation)
 
 
 # Open an xml payload file
@@ -276,3 +282,6 @@ print('Generated PAN-OS API Key!')
 # Let's try parsing an payload
 xml_payload = get_xml_from_file(args.f)
 validate_xml_from_string(xml_payload)
+
+# Let's try deploying the payload!
+route_table = validate_xml_from_string(do_api_get_opcmd_key(session_auth_key, args.api_endpoint, xml_payload, args.k))
