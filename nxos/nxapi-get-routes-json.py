@@ -19,37 +19,37 @@ from django.core.validators import URLValidator
 
 # Do API
 # Send a json payload via the requests API
-def do_api_unpw(do_api_unpw_user, do_api_unpw_password, do_api_unpw_url, do_api_unpw_payload): 
-      # Perform NX-API Processing - conditional basic or certificate authentication
-      try: 
-            do_api_unpw_headers = {'content-type':'application/json'}
-            do_api_unpw_r = requests.post(do_api_unpw_url,data=json.dumps(do_api_unpw_payload), headers=do_api_unpw_headers,auth=(do_api_unpw_user,do_api_unpw_password))
-            # We'll be discarding the actual `Response` object after this, but we do want to get HTTP status for erro handling
-            response_code = do_api_unpw_r.status_code
-            do_api_unpw_r.raise_for_status() #trigger an exception before trying to convert or read data. This should allow us to get good error info
-            return do_api_unpw_r.json() #if HTTP status is good, i.e. a 100/200 status code, we're going to convert the response into a json dict
-      except:
-            if httperrors.get(response_code):
-                  print('HTTP Status Error ' + str(response_code) + ' ' + httperrors.get(response_code)[max(min(args.verbosity,1),0)])
-                  exit() #interpet the error, then close out so we don't have to put all the rest of our code in an except statement
-            else:
-                  print('Unhandled HTTP Error ' + str(response_code) + '!' )
-                  exit() #interpet the error, then close out so we don't have to put all the rest of our code in an except statement
+def do_api_unpw(do_api_unpw_user, do_api_unpw_password, do_api_unpw_url, do_api_unpw_payload):
+    # Perform NX-API Processing - conditional basic or certificate authentication
+    try: 
+        do_api_unpw_headers = {'content-type':'application/json'}
+        do_api_unpw_r = requests.post(do_api_unpw_url,data=json.dumps(do_api_unpw_payload), headers=do_api_unpw_headers,auth=(do_api_unpw_user,do_api_unpw_password))
+        # We'll be discarding the actual `Response` object after this, but we do want to get HTTP status for erro handling
+        response_code = do_api_unpw_r.status_code
+        do_api_unpw_r.raise_for_status() #trigger an exception before trying to convert or read data. This should allow us to get good error info
+        return do_api_unpw_r.json() #if HTTP status is good, i.e. a 100/200 status code, we're going to convert the response into a json dict
+    except:
+        if httperrors.get(response_code):
+            print('HTTP Status Error ' + str(response_code) + ' ' + httperrors.get(response_code)[max(min(args.verbosity,1),0)])
+            exit() #interpet the error, then close out so we don't have to put all the rest of our code in an except statement
+        else:
+            print('Unhandled HTTP Error ' + str(response_code) + '!' )
+            exit() #interpet the error, then close out so we don't have to put all the rest of our code in an except statement
 def do_api_cert(do_api_cert_client, do_api_cert_pkey, do_api_cert_ca, do_api_cert_user, do_api_cert_password, do_api_cert_url, do_api_cert_payload):
-      try: 
-            do_api_unpw_headers = {'content-type':'application/json'}
-            do_api_cert_r = requests.post(do_api_cert_url,data=json.dumps(do_api_cert_payload), headers=do_api_unpw_headers,auth=(do_api_cert_user,do_api_cert_password),cert=(do_api_cert_client,do_api_cert_pkey),verify=do_api_cert_ca)
-            # We'll be discarding the actual `Response` object after this, but we do want to get HTTP status for erro handling
-            response_code = do_api_cert_r.status_code
-            do_api_cert_r.raise_for_status() #trigger an exception before trying to convert or read data. This should allow us to get good error info
-            return do_api_cert_r.json() #if HTTP status is good, i.e. a 100/200 status code, we're going to convert the response into a json dict
-      except:
-            if httperrors.get(response_code):
-                  print ('HTTP Status Error ' + str(response_code) + ' ' + httperrors.get(response_code)[max(min(args.verbosity,1),0)])
-                  exit() #interpet the error, then close out so we don't have to put all the rest of our code in an except statement
-            else:
-                  print ('Unhandled HTTP Error ' + str(response_code) + '!' )
-                  exit() #interpet the error, then close out so we don't have to put all the rest of our code in an except statement
+    try: 
+        do_api_unpw_headers = {'content-type':'application/json'}
+        do_api_cert_r = requests.post(do_api_cert_url,data=json.dumps(do_api_cert_payload), headers=do_api_unpw_headers,auth=(do_api_cert_user,do_api_cert_password),cert=(do_api_cert_client,do_api_cert_pkey),verify=do_api_cert_ca)
+        # We'll be discarding the actual `Response` object after this, but we do want to get HTTP status for erro handling
+        response_code = do_api_cert_r.status_code
+        do_api_cert_r.raise_for_status() #trigger an exception before trying to convert or read data. This should allow us to get good error info
+        return do_api_cert_r.json() #if HTTP status is good, i.e. a 100/200 status code, we're going to convert the response into a json dict
+    except:
+        if httperrors.get(response_code):
+            print ('HTTP Status Error ' + str(response_code) + ' ' + httperrors.get(response_code)[max(min(args.verbosity,1),0)])
+            exit() #interpet the error, then close out so we don't have to put all the rest of our code in an except statement
+        else:
+            print ('Unhandled HTTP Error ' + str(response_code) + '!' )
+            exit() #interpet the error, then close out so we don't have to put all the rest of our code in an except statement
 
 #### Open a json payload file
 def get_json_from_file(get_json_from_file_name):
