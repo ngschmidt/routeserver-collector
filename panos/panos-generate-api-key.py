@@ -1,11 +1,17 @@
 #!/usr/bin/python3
-# NX-OS API Route Table Parser
+# PAN-OS API API Keygen
+# PAN-OS OP-CMDs are not supported via REST, only CRUD. This will generate an API key for use with a future function.
+# Actions will be functionalized so that every API call can theoretically use an ephemeral key, or re-use.
 # Nicholas Schmidt
-# 04 Jun 2020
+# 27 Jul 2020
 
 # API Processing imports
 import requests
 import json
+
+# XML has vulnerabilities, use DefusedXML libraries instead to offload security mitigations to the project
+# https://pypi.org/project/defusedxml/#defusedxml
+import defusedxml
 
 # Command line parsing imports
 import argparse
@@ -17,13 +23,12 @@ from django.core.validators import URLValidator
 
 # Functions
 
-# Do API
-# Send a json payload via the requests API
-def do_api_unpw(do_api_unpw_user, do_api_unpw_password, do_api_unpw_url, do_api_unpw_payload):
-    # Perform NX-API Processing - conditional basic or certificate authentication
+# Do API GET
+def do_api_get_unpw(do_api_unpw_user, do_api_unpw_password, do_api_unpw_url, do_api_certvalidation):
+    # Perform API Processing - conditional basic authentication
     try:
-        do_api_unpw_headers = {'content-type': 'application/json'}
-        do_api_unpw_r = requests.post(do_api_unpw_url, data=json.dumps(do_api_unpw_payload), headers=do_api_unpw_headers, auth=(do_api_unpw_user, do_api_unpw_password))
+        do_api_unpw_headers = {'content-type': 'application/xml'}
+        do_api_unpw_r = requests.get(do_api_unpw_url, headers=do_api_unpw_headers, verify=do_api_certvalidation)
         # We'll be discarding the actual `Response` object after this, but we do want to get HTTP status for erro handling
         response_code = do_api_unpw_r.status_code
         do_api_unpw_r.raise_for_status()  # trigger an exception before trying to convert or read data. This should allow us to get good error info
@@ -37,14 +42,17 @@ def do_api_unpw(do_api_unpw_user, do_api_unpw_password, do_api_unpw_url, do_api_
             exit()  # interpet the error, then close out so we don't have to put all the rest of our code in an except statement
 
 
-def do_api_cert(do_api_cert_client, do_api_cert_pkey, do_api_cert_ca, do_api_cert_user, do_api_cert_password, do_api_cert_url, do_api_cert_payload):
+# Do API GET with Auth Key
+# Send a xml payload via the requests API
+def do_api_get_key(do_api_post_auth_key, do_api_post_url, do_api_post_payload, do_api_certvalidation):
+    # Perform API Processing - conditional basic authentication
     try:
-        do_api_unpw_headers = {'content-type': 'application/json'}
-        do_api_cert_r = requests.post(do_api_cert_url, data=json.dumps(do_api_cert_payload), headers=do_api_unpw_headers, auth=(do_api_cert_user, do_api_cert_password), cert=(do_api_cert_client, do_api_cert_pkey), verify=do_api_cert_ca)
+        do_api_post_headers = {'content-type': 'application/xml'}
+        do_api_post_r = requests.get(do_api_post_url + do_api_post_payload + '&key=' + do_api_post_auth_key, headers=do_api_post_headers, verify=do_api_certvalidation)
         # We'll be discarding the actual `Response` object after this, but we do want to get HTTP status for erro handling
-        response_code = do_api_cert_r.status_code
-        do_api_cert_r.raise_for_status()  # trigger an exception before trying to convert or read data. This should allow us to get good error info
-        return do_api_cert_r.json()  # if HTTP status is good, i.e. a 100/200 status code, we're going to convert the response into a json dict
+        response_code = do_api_post_r.status_code
+        do_api_post_r.raise_for_status()  # trigger an exception before trying to convert or read data. This should allow us to get good error info
+        return do_api_post_r.json()  # if HTTP status is good, i.e. a 100/200 status code, we're going to convert the response into a json dict
     except:
         if httperrors.get(response_code):
             print('HTTP Status Error ' + str(response_code) + ' ' + httperrors.get(response_code)[max(min(args.verbosity, 1), 0)])
@@ -54,15 +62,41 @@ def do_api_cert(do_api_cert_client, do_api_cert_pkey, do_api_cert_ca, do_api_cer
             exit()  # interpet the error, then close out so we don't have to put all the rest of our code in an except statement
 
 
-# Open a json payload file
-def get_json_from_file(get_json_from_file_name):
-    # Attempt to load a json file, and lint it
-    # TODO: We could put a linter here.
+# Do API POST with Auth Key
+# Send a xml payload via the requests API
+def do_api_post_key(do_api_post_auth_key, do_api_post_url, do_api_post_payload, do_api_certvalidation):
+    # Perform API Processing - conditional basic authentication
     try:
-        with open(get_json_from_file_name) as json_file:
-            return json.load(json_file)
+        do_api_post_headers = {'content-type': 'application/xml'}
+        do_api_post_r = requests.post(do_api_post_url + do_api_post_payload + '&key=' + do_api_post_auth_key, headers=do_api_post_headers, verify=do_api_certvalidation)
+        # We'll be discarding the actual `Response` object after this, but we do want to get HTTP status for erro handling
+        response_code = do_api_post_r.status_code
+        do_api_post_r.raise_for_status()  # trigger an exception before trying to convert or read data. This should allow us to get good error info
+        return do_api_post_r.json()  # if HTTP status is good, i.e. a 100/200 status code, we're going to convert the response into a json dict
+    except:
+        if httperrors.get(response_code):
+            print('HTTP Status Error ' + str(response_code) + ' ' + httperrors.get(response_code)[max(min(args.verbosity, 1), 0)])
+            exit()  # interpet the error, then close out so we don't have to put all the rest of our code in an except statement
+        else:
+            print('Unhandled HTTP Error ' + str(response_code) + '!')
+            exit()  # interpet the error, then close out so we don't have to put all the rest of our code in an except statement
+
+
+# DO API GET for API Key
+def do_api_get_auth_key(do_api_get_auth_key_user, do_api_get_auth_key_password, do_api_get_auth_key_url, do_api_get_auth_key_certvalidation):
+    return do_api_get_unpw(do_api_get_auth_key_user, do_api_get_auth_key_password, 
+                            '/?type=keygen&user=' + do_api_get_auth_key_user + '&password=' + do_api_get_auth_key_password,
+                            do_api_get_auth_key_certvalidation)
+
+
+# Open an xml payload file
+def get_xml_from_file(get_xml_from_file_name):
+    # Attempt to load a json file, and lint it
+    try:
+        with open(get_xml_from_file_name) as xml_file:
+            return defusedxml.ElementTree.parse(xml_file)
     except ValueError as err:
-        print('Python thinks you have a json formatting issue. Please run your payload input through a json linter.')
+        print('Python thinks you have a xml formatting issue. Please run your payload input through a xml linter.')
         print(err)
         exit()
     except IOError as err:
@@ -76,8 +110,7 @@ def get_json_from_file(get_json_from_file_name):
 
 # References
 
-# Set HTTP Error + Verbosity table. Due to the use of max(min()),
-# verbosity count becomes a numerical range that caps off and prevents array issues
+# Set HTTP Error + Verbosity table. Due to the use of max(min()), verbosity count becomes a numerical range that caps off and prevents array issues
 # Credit where due - https://gist.github.com/bl4de/3086cf26081110383631 by bl4de
 httperrors = {
     100: ('Continue', 'Request received, please continue'),
@@ -146,62 +179,27 @@ httperrors = {
 }
 
 # Arguments Parsing
-parser = argparse.ArgumentParser(description='Fetch all routing tables via NX-API')
+parser = argparse.ArgumentParser(description='Fetch via API')
 parser.add_argument('-v', '--verbosity', action='count', default=0, help='Output Verbosity')
-parser.add_argument('-f', help='Select JSON Payload file')
-subparsers = parser.add_subparsers(help='Use Basic or CA Authentication')
+parser.add_argument('-f', help='Select XML Payload file')
+parser.add_argument('-k', action='store_false', default=True, help='Ignore Certificate Errors')
+subparsers = parser.add_subparsers(help='Use Basic or Key Authentication')
 unpw = subparsers.add_parser('basic', help='Use Basic Authentication')
-unpw.add_argument('-u', help='NX-API Username')
-unpw.add_argument('-p', help='NX-API Password')
-cert = subparsers.add_parser('ca', help='Use Certificate Authentication')
-cert.add_argument('--cert', help='NX-API Client Certificate. Required if using CA Authentication')
-cert.add_argument('--privkey', help='NX-API Client Certificate Private Key. Required if using CA Authentication')
-cert.add_argument('--ca', help='NX-API Client Certificate CA. Optional if using CA Authentication')
-parser.add_argument('nxapi_endpoint', help='The NX-API Endpoint to target with this API call')
+unpw.add_argument('-u', help='Username')
+unpw.add_argument('-p', help='Password')
+cert = subparsers.add_parser('key', help='Use Key Authentication')
+cert.add_argument('--auth_key', help='Authentication Key')
+parser.add_argument('api_endpoint', help='The API Endpoint to target with this API call. PAN-OS XML API is at https://<ip>/api')
 
 args = parser.parse_args()
-
-# Ensure that NX-API Endpoint is a valid one
+# Ensure that API Endpoint is a valid one
 validate = URLValidator()
 try:
-    validate(args.nxapi_endpoint)
+    validate(args.api_endpoint)
 except:
-    print('Invalid URL. Please try a valid URL. Example: "http://10.1.1.1/ins"')
+    print('Invalid URL. Please try a valid URL. Example: "https://10.0.0.0/api"')
     exit()
 
-# Get system information, ensure that you have a good endpoint
-# JSON Payload to check version data
-precheck_payload = {
-                    "ins_api": {
-                                "version": "1.0",
-                                "type": "cli_show",
-                                "chunk": "0",
-                                "sid": "sid",
-                                "input": "show version",
-                                "output_format": "json"
-                    }
-}
-precheck = do_api_unpw(args.u, args.p, args.nxapi_endpoint, precheck_payload)
-try:
-    print('Found NX-API Endpoint! System Name: ' + precheck['ins_api']['outputs']['output']['body']['host_name'])
-    print('Chassis: ' + precheck['ins_api']['outputs']['output']['body']['chassis_id'])
-    print('Version: ' + precheck['ins_api']['outputs']['output']['body']['nxos_ver_str'])
-except:
-    print('API Endpoint did not respond to test query with valid data. Please try again on a valid NX-API endpoint.')
-
-# Create a JSON file if a developer wants to use this from the python code (it's sometimes easier)
-# with open('payload_show_ip_route_vrf_all.json', 'w') as outfile:
-#    json.dump(payload, outfile)
-
-route_tables = do_api_unpw(args.u, args.p, args.nxapi_endpoint, get_json_from_file(args.f))
-
-# Begin Processing API Data - Parsing Route Tables
-# Debugging shouldn't require code changes, let's use our verbosity switches
-if max(min(args.verbosity, 1), 0) >= 1:
-    print(route_tables)  # print raw json response
-
-# iterate through all route tables, and print them
-for i in route_tables['ins_api']['outputs']['output']['body']['TABLE_vrf']['ROW_vrf']:
-    print(i['vrf-name-out'] + ': ')
-    for ii in i['TABLE_addrf']['ROW_addrf']['TABLE_prefix']['ROW_prefix']:
-        print(ii)
+# Let's try getting an API key first
+    session_auth_key = do_api_get_auth_key(args.u, args.p, args.api_endpoint, args.k)
+    print(session_auth_key)
