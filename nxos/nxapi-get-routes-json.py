@@ -57,6 +57,7 @@ def do_api_cert(do_api_cert_client, do_api_cert_pkey, do_api_cert_ca, do_api_cer
 # Open a json payload file
 def get_json_from_file(get_json_from_file_name):
     # Attempt to load a json file, and lint it
+    # TODO: We could put a linter here.
     try:
         with open(get_json_from_file_name) as json_file:
             return json.load(json_file)

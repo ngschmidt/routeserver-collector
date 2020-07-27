@@ -1,7 +1,9 @@
 #!/usr/bin/python3
-# PAN-OS API Route Table Parser
+# PAN-OS API API Keygen
+# PAN-OS OP-CMDs are not supported via REST, only CRUD. This will generate an API key for use with a future function.
+# Actions will be functionalized so that every API call can theoretically use an ephemeral key, or re-use.
 # Nicholas Schmidt
-# 19 Jul 2020
+# 27 Jul 2020
 
 # API Processing imports
 import requests
@@ -253,7 +255,7 @@ httperrors = {
 # Arguments Parsing
 parser = argparse.ArgumentParser(description='Fetch via API')
 parser.add_argument('-v', '--verbosity', action='count', default=0, help='Output Verbosity')
-parser.add_argument('-f', help='Select XML Payload file', required=True)
+parser.add_argument('-f', help='Select XML Payload file')
 parser.add_argument('-k', action='store_false', default=True, help='Ignore Certificate Errors')
 subparsers = parser.add_subparsers(help='Use Basic or Key Authentication')
 unpw = subparsers.add_parser('basic', help='Use Basic Authentication')
@@ -273,24 +275,5 @@ except:
     exit()
 
 # Let's try getting an API key first
-try:
-    session_auth_key = do_api_get_auth_key(args.u, args.p, args.api_endpoint, args.k)
-except:
-    print('Encountered an unhandled issue getting authorization key!')
-    exit()
-print('Generated PAN-OS API Key!')
-
-# Let's try parsing an payload
-xml_payload = get_xml_from_file(args.f)
-validate_xml_from_string(xml_payload)
-
-# Let's try deploying the payload!
-route_tables = validate_xml_from_string(do_api_get_opcmd_key(session_auth_key, args.api_endpoint, xml_payload, args.k))
-
-# Begin Processing API Data - Parsing Route Tables
-# Debugging shouldn't require code changes, let's use our verbosity switches
-if max(min(args.verbosity, 1), 0) >= 1:
-    print(route_tables)  # print raw json response
-
-for i in route_tables['response']['result']['entry']:
-    print(i)
+session_auth_key = do_api_get_auth_key(args.u, args.p, args.api_endpoint, args.k)
+print(session_auth_key)
