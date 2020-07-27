@@ -264,6 +264,7 @@ cert.add_argument('--auth_key', help='Authentication Key')
 parser.add_argument('api_endpoint', help='The API Endpoint to target with this API call. PAN-OS XML API is at https://<ip>/api')
 
 args = parser.parse_args()
+
 # Ensure that API Endpoint is a valid one
 validate = URLValidator()
 try:
