@@ -169,16 +169,16 @@ except:
     exit()
 
 # Get system information, ensure that you have a good endpoint
-## JSON Payload to check version data
+# JSON Payload to check version data
 precheck_payload = {
-    "ins_api": {
-    "version": "1.0",
-    "type": "cli_show",
-    "chunk": "0",
-    "sid": "sid",
-    "input": "show version",
-    "output_format": "json"
-    }
+                    "ins_api": {
+                                "version": "1.0",
+                                "type": "cli_show",
+                                "chunk": "0",
+                                "sid": "sid",
+                                "input": "show version",
+                                "output_format": "json"
+                    }
 }
 precheck = do_api_unpw(args.u, args.p, args.nxapi_endpoint, precheck_payload)
 try:
@@ -189,18 +189,18 @@ except:
     print('API Endpoint did not respond to test query with valid data. Please try again on a valid NX-API endpoint.')
 
 # Create a JSON file if a developer wants to use this from the python code (it's sometimes easier)
-#with open('payload_show_ip_route_vrf_all.json', 'w') as outfile:
+# with open('payload_show_ip_route_vrf_all.json', 'w') as outfile:
 #    json.dump(payload, outfile)
 
-route_tables = do_api_unpw(args.u,args.p,args.nxapi_endpoint,get_json_from_file(args.f))
+route_tables = do_api_unpw(args.u, args.p, args.nxapi_endpoint, get_json_from_file(args.f))
 
 # Begin Processing API Data - Parsing Route Tables
-## Debugging shouldn't require code changes, let's use our verbosity switches
-if max(min(args.verbosity,1),0) >= 1:
-    print (route_tables) #print raw json response
+# Debugging shouldn't require code changes, let's use our verbosity switches
+if max(min(args.verbosity, 1), 0) >= 1:
+    print(route_tables) #print raw json response
 
 # iterate through all route tables, and print them
 for i in route_tables['ins_api']['outputs']['output']['body']['TABLE_vrf']['ROW_vrf']:
     print(i['vrf-name-out'] + ': ')
-    for ii in i['TABLE_addrf']['ROW_addrf']['TABLE_prefix']['ROW_prefix']: 
+    for ii in i['TABLE_addrf']['ROW_addrf']['TABLE_prefix']['ROW_prefix']:
         print(ii)
