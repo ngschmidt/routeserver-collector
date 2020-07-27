@@ -285,3 +285,4 @@ validate_xml_from_string(xml_payload)
 
 # Let's try deploying the payload!
 route_table = validate_xml_from_string(do_api_get_opcmd_key(session_auth_key, args.api_endpoint, xml_payload, args.k))
+print(route_table)
