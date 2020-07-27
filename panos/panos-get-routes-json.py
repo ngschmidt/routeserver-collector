@@ -156,6 +156,7 @@ def validate_xml_from_string(validate_xml_from_string_string):
         exit()
     return return_dict_from_xml
 
+
 # References
 
 # Set HTTP Error + Verbosity table. Due to the use of max(min()), verbosity count becomes a numerical range that caps off and prevents array issues

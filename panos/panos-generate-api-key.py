@@ -59,11 +59,12 @@ def do_api_get_key(do_api_post_auth_key, do_api_post_url, do_api_post_payload, d
     # Perform API Processing - conditional basic authentication
     try:
         do_api_post_headers = {'content-type': 'application/xml'}
+        print(do_api_post_url + do_api_post_payload + '&key=' + do_api_post_auth_key)
         do_api_post_r = requests.get(do_api_post_url + do_api_post_payload + '&key=' + do_api_post_auth_key, headers=do_api_post_headers, verify=do_api_certvalidation)
         # We'll be discarding the actual `Response` object after this, but we do want to get HTTP status for erro handling
         response_code = do_api_post_r.status_code
         do_api_post_r.raise_for_status()  # trigger an exception before trying to convert or read data. This should allow us to get good error info
-        return do_api_post_r.json()  # if HTTP status is good, i.e. a 100/200 status code, we're going to convert the response into a json dict
+        return do_api_post_r.text  # if HTTP status is good, i.e. a 100/200 status code, we're going to convert the response into a json dict
     except requests.Timeout:
         print('API Connection timeout!')
     except requests.ConnectionError as connection_error:
@@ -92,7 +93,7 @@ def do_api_post_key(do_api_post_auth_key, do_api_post_url, do_api_post_payload, 
         # We'll be discarding the actual `Response` object after this, but we do want to get HTTP status for erro handling
         response_code = do_api_post_r.status_code
         do_api_post_r.raise_for_status()  # trigger an exception before trying to convert or read data. This should allow us to get good error info
-        return do_api_post_r.json()  # if HTTP status is good, i.e. a 100/200 status code, we're going to convert the response into a json dict
+        return do_api_post_r.text  # if HTTP status is good, i.e. a 100/200 status code, we're going to convert the response into a json dict
     except requests.Timeout:
         print('API Connection timeout!')
     except requests.ConnectionError as connection_error:
@@ -123,12 +124,17 @@ def do_api_get_auth_key(do_api_get_auth_key_user, do_api_get_auth_key_password, 
     return api_response['response']['result']['key']
 
 
+# Do an API Op Command
+def do_api_get_opcmd_key(do_api_opcmd_auth_key, do_api_opcmd_url, do_api_opcmd_payload, do_api_certvalidation):
+    return do_api_get_key(do_api_opcmd_auth_key, do_api_opcmd_url, '/?type=op&cmd=' + do_api_opcmd_payload, do_api_certvalidation)
+
+
 # Open an xml payload file
 def get_xml_from_file(get_xml_from_file_name):
     # Attempt to load a json file, and lint it
     try:
-        with open(get_xml_from_file_name) as xml_file:
-            return ElementTree.parse(xml_file)
+        with open(get_xml_from_file_name) as file_contents_string:
+            return file_contents_string.read()
     except ValueError as err:
         print('Python thinks you have a xml formatting issue. Please run your payload input through a xml linter.')
         print(err)
@@ -140,6 +146,17 @@ def get_xml_from_file(get_xml_from_file_name):
     except:
         print('An unexpected error has occurred!')
         exit()
+
+
+# Validate XML from string
+def validate_xml_from_string(validate_xml_from_string_string):
+    # Test an import into dict
+    try:
+        return_dict_from_xml = xmltodict.parse(validate_xml_from_string_string, encoding='utf-8')
+    except:
+        print('Invalid XML found! Exiting...')
+        exit()
+    return return_dict_from_xml
 
 
 # References
