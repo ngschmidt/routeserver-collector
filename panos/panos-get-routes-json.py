@@ -59,7 +59,7 @@ def do_api_post_unpw(do_api_unpw_user, do_api_unpw_password, do_api_unpw_url, do
 def do_api_post_cert(do_api_cert_client, do_api_cert_pkey, do_api_cert_ca, do_api_cert_user, do_api_cert_password, do_api_cert_url, do_api_cert_payload):
     try: 
         do_api_unpw_headers = {'content-type': 'application/json'}
-        do_api_cert_r = requests.post(do_api_cert_url,data=json.dumps(do_api_cert_payload), headers=do_api_unpw_headers, auth=(do_api_cert_user, do_api_cert_password), cert=(do_api_cert_client, do_api_cert_pkey), verify=do_api_cert_ca)
+        do_api_cert_r = requests.post(do_api_cert_url, data=json.dumps(do_api_cert_payload), headers=do_api_unpw_headers, auth=(do_api_cert_user, do_api_cert_password), cert=(do_api_cert_client, do_api_cert_pkey), verify=do_api_cert_ca)
         # We'll be discarding the actual `Response` object after this, but we do want to get HTTP status for erro handling
         response_code = do_api_cert_r.status_code
         do_api_cert_r.raise_for_status()  # trigger an exception before trying to convert or read data. This should allow us to get good error info
