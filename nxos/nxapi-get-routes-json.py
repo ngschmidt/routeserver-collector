@@ -1,7 +1,7 @@
 #!/usr/bin/python3
-### NX-OS API Route Table Parser
-### Nicholas Schmidt
-### 04 Jun 2020
+# NX-OS API Route Table Parser
+# Nicholas Schmidt
+# 04 Jun 2020
 
 # API Processing imports
 import requests
@@ -12,16 +12,14 @@ import argparse
 
 # Command line validating imports
 from django.core.validators import URLValidator
-from django.core.exceptions import ValidationError
 
 # Object Definitions
 
-## Functions
+# Functions
 
-### Do API
-#### Send a json payload via the requests API
-def do_api_unpw(do_api_unpw_user, do_api_unpw_password, do_api_unpw_url, do_api_unpw_payload):
-      # Perform NX-API Processing - conditional basic or certificate authentication
+# Do API
+# Send a json payload via the requests API
+def do_api_unpw(do_api_unpw_user, do_api_unpw_password, do_api_unpw_url, do_api_unpw_payload): # Perform NX-API Processing - conditional basic or certificate authentication
       try: 
             do_api_unpw_headers = {'content-type':'application/json'}
             do_api_unpw_r = requests.post(do_api_unpw_url,data=json.dumps(do_api_unpw_payload), headers=do_api_unpw_headers,auth=(do_api_unpw_user,do_api_unpw_password))
