@@ -19,7 +19,8 @@ from django.core.validators import URLValidator
 
 # Do API
 # Send a json payload via the requests API
-def do_api_unpw(do_api_unpw_user, do_api_unpw_password, do_api_unpw_url, do_api_unpw_payload): # Perform NX-API Processing - conditional basic or certificate authentication
+def do_api_unpw(do_api_unpw_user, do_api_unpw_password, do_api_unpw_url, do_api_unpw_payload): 
+      # Perform NX-API Processing - conditional basic or certificate authentication
       try: 
             do_api_unpw_headers = {'content-type':'application/json'}
             do_api_unpw_r = requests.post(do_api_unpw_url,data=json.dumps(do_api_unpw_payload), headers=do_api_unpw_headers,auth=(do_api_unpw_user,do_api_unpw_password))
@@ -68,10 +69,10 @@ def get_json_from_file(get_json_from_file_name):
             print('An unexpected error has occurred!')
             exit()
 
-## References
+# References
 
-### Set HTTP Error + Verbosity table. Due to the use of max(min()), verbosity count becomes a numerical range that caps off and prevents array issues
-#### Credit where due - https://gist.github.com/bl4de/3086cf26081110383631 by bl4de
+# Set HTTP Error + Verbosity table. Due to the use of max(min()), verbosity count becomes a numerical range that caps off and prevents array issues
+# Credit where due - https://gist.github.com/bl4de/3086cf26081110383631 by bl4de
 httperrors = {
   100: ('Continue', 'Request received, please continue'),
   101: ('Switching Protocols',
