@@ -11,7 +11,9 @@ import json
 
 # XML has vulnerabilities, use DefusedXML libraries instead to offload security mitigations to the project
 # https://pypi.org/project/defusedxml/#defusedxml
-import defusedxml
+from defusedxml import ElementTree
+# We like JSON, as We'd rather have only one language for data processing. Let's try xmltodict
+import xmltodict
 
 # Command line parsing imports
 import argparse
@@ -32,14 +34,23 @@ def do_api_get_unpw(do_api_unpw_user, do_api_unpw_password, do_api_unpw_url, do_
         # We'll be discarding the actual `Response` object after this, but we do want to get HTTP status for erro handling
         response_code = do_api_unpw_r.status_code
         do_api_unpw_r.raise_for_status()  # trigger an exception before trying to convert or read data. This should allow us to get good error info
-        return do_api_unpw_r.json()  # if HTTP status is good, i.e. a 100/200 status code, we're going to convert the response into a json dict
-    except:
+        return do_api_unpw_r.text  # if HTTP status is good, i.e. a 100/200 status code, we're going to convert the response into a json dict
+    except requests.Timeout:
+        print('API Connection timeout!')
+    except requests.ConnectionError as connection_error:
+        print(connection_error)
+    except requests.HTTPError:
         if httperrors.get(response_code):
             print('HTTP Status Error ' + str(response_code) + ' ' + httperrors.get(response_code)[max(min(args.verbosity, 1), 0)])
             exit()  # interpet the error, then close out so we don't have to put all the rest of our code in an except statement
         else:
             print('Unhandled HTTP Error ' + str(response_code) + '!')
             exit()  # interpet the error, then close out so we don't have to put all the rest of our code in an except statement
+    except requests.RequestException as requests_exception:
+        print(requests_exception)
+    except:
+        print('Unhandled Requests exception!')
+        exit()
 
 
 # Do API GET with Auth Key
@@ -53,13 +64,22 @@ def do_api_get_key(do_api_post_auth_key, do_api_post_url, do_api_post_payload, d
         response_code = do_api_post_r.status_code
         do_api_post_r.raise_for_status()  # trigger an exception before trying to convert or read data. This should allow us to get good error info
         return do_api_post_r.json()  # if HTTP status is good, i.e. a 100/200 status code, we're going to convert the response into a json dict
-    except:
+    except requests.Timeout:
+        print('API Connection timeout!')
+    except requests.ConnectionError as connection_error:
+        print(connection_error)
+    except requests.HTTPError:
         if httperrors.get(response_code):
             print('HTTP Status Error ' + str(response_code) + ' ' + httperrors.get(response_code)[max(min(args.verbosity, 1), 0)])
             exit()  # interpet the error, then close out so we don't have to put all the rest of our code in an except statement
         else:
             print('Unhandled HTTP Error ' + str(response_code) + '!')
             exit()  # interpet the error, then close out so we don't have to put all the rest of our code in an except statement
+    except requests.RequestException as requests_exception:
+        print(requests_exception)
+    except:
+        print('Unhandled Requests exception!')
+        exit()
 
 
 # Do API POST with Auth Key
@@ -73,20 +93,34 @@ def do_api_post_key(do_api_post_auth_key, do_api_post_url, do_api_post_payload, 
         response_code = do_api_post_r.status_code
         do_api_post_r.raise_for_status()  # trigger an exception before trying to convert or read data. This should allow us to get good error info
         return do_api_post_r.json()  # if HTTP status is good, i.e. a 100/200 status code, we're going to convert the response into a json dict
-    except:
+    except requests.Timeout:
+        print('API Connection timeout!')
+    except requests.ConnectionError as connection_error:
+        print(connection_error)
+    except requests.HTTPError:
         if httperrors.get(response_code):
             print('HTTP Status Error ' + str(response_code) + ' ' + httperrors.get(response_code)[max(min(args.verbosity, 1), 0)])
             exit()  # interpet the error, then close out so we don't have to put all the rest of our code in an except statement
         else:
             print('Unhandled HTTP Error ' + str(response_code) + '!')
             exit()  # interpet the error, then close out so we don't have to put all the rest of our code in an except statement
+    except requests.RequestException as requests_exception:
+        print(requests_exception)
+    except:
+        print('Unhandled Requests exception!')
+        exit()
 
 
 # DO API GET for API Key
 def do_api_get_auth_key(do_api_get_auth_key_user, do_api_get_auth_key_password, do_api_get_auth_key_url, do_api_get_auth_key_certvalidation):
-    return do_api_get_unpw(do_api_get_auth_key_user, do_api_get_auth_key_password, 
-                            '/?type=keygen&user=' + do_api_get_auth_key_user + '&password=' + do_api_get_auth_key_password,
-                            do_api_get_auth_key_certvalidation)
+    try:
+        api_response = xmltodict.parse(do_api_get_unpw(do_api_get_auth_key_user, do_api_get_auth_key_password, 
+                                        do_api_get_auth_key_url + '/?type=keygen&user=' + do_api_get_auth_key_user + '&password=' + do_api_get_auth_key_password,
+                                        do_api_get_auth_key_certvalidation), encoding='utf-8')
+    except:
+        print('An error was encountered while parsing XML API Response!')
+        exit()
+    return api_response['response']['result']['key']
 
 
 # Open an xml payload file
@@ -94,7 +128,7 @@ def get_xml_from_file(get_xml_from_file_name):
     # Attempt to load a json file, and lint it
     try:
         with open(get_xml_from_file_name) as xml_file:
-            return defusedxml.ElementTree.parse(xml_file)
+            return ElementTree.parse(xml_file)
     except ValueError as err:
         print('Python thinks you have a xml formatting issue. Please run your payload input through a xml linter.')
         print(err)
@@ -112,7 +146,30 @@ def get_xml_from_file(get_xml_from_file_name):
 
 # Set HTTP Error + Verbosity table. Due to the use of max(min()), verbosity count becomes a numerical range that caps off and prevents array issues
 # Credit where due - https://gist.github.com/bl4de/3086cf26081110383631 by bl4de
+# 1-99 Errors are PAN-OS specific.
+# More here: https://docs.paloaltonetworks.com/pan-os/9-0/pan-os-panorama-api/get-started-with-the-pan-os-xml-api/pan-os-xml-api-error-codes.html
 httperrors = {
+    1:   ('Unknown Command', 'The specific config or operational command is not recognized.'),
+    2:   ('Internal Error', 'Check with technical support when seeing these errors.'),
+    3:   ('Internal Error', 'Check with technical support when seeing these errors.'),
+    4:   ('Internal Error', 'Check with technical support when seeing these errors.'),
+    5:   ('Internal Error', 'Check with technical support when seeing these errors.'),
+    6:   ('Bad Xpath', 'The xpath specified in one or more attributes of the command is invalid. Check the API browser for proper xpath values.'),
+    7:   ('Object Not Present', 'Object specified by the xpath is not present. For example, entry[@name="value"] where no object with name "value" is present.'),
+    8:   ('Object Not Unique', 'For commands that operate on a single object, the specified object is not unique.'),
+    10:  ('Reference count not zero', 'Object cannot be deleted as there are other objects that refer to it. For example, address object still in use in policy.'),
+    11:  ('Internal Error', 'Check with technical support when seeing these errors.'),
+    12:  ('Invalid Object', 'Xpath or element values provided are not complete.'),
+    14:  ('Operation Not Possible', 'Operation is allowed but not possible in this case. For example, moving a rule up one position when it is already at the top.'),
+    15:  ('Operation Denied', 'Operation is allowed. For example, Admin not allowed to delete own account, Running a command that is not allowed on a passive device.'),
+    16:  ('Unauthorized', 'The API role does not have access rights to run this query.'),
+    17:  ('Invalid Command', 'Invalid command or parameters.'),
+    18:  ('Malformed command', 'The XML is malformed'),
+    19:  ('Success', 'Command Completed Successfully'),
+    20:  ('Success', 'Command Completed Successfully'),
+    21:  ('Internal Error', 'Check with technical support when seeing these errors.'),
+    22:  ('Session timed out', 'The session for this query timed out'),
+
     100: ('Continue', 'Request received, please continue'),
     101: ('Switching Protocols',
           'Switching to new protocol; obey Upgrade header'),
@@ -201,5 +258,5 @@ except:
     exit()
 
 # Let's try getting an API key first
-    session_auth_key = do_api_get_auth_key(args.u, args.p, args.api_endpoint, args.k)
-    print(session_auth_key)
+session_auth_key = do_api_get_auth_key(args.u, args.p, args.api_endpoint, args.k)
+print(session_auth_key)
