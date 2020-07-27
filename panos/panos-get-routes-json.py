@@ -18,49 +18,52 @@ from django.core.validators import URLValidator
 # Functions
 
 # Do API GET
-def do_api_get_unpw(do_api_unpw_user, do_api_unpw_password, do_api_unpw_url,do_api_certvalidation):
+def do_api_get_unpw(do_api_unpw_user, do_api_unpw_password, do_api_unpw_url, do_api_certvalidation):
     # Perform API Processing - conditional basic authentication
     try: 
-        do_api_unpw_headers = {'content-type':'application/json'}
-        do_api_unpw_r = requests.get(do_api_unpw_url, headers=do_api_unpw_headers,auth=(do_api_unpw_user,do_api_unpw_password), verify=do_api_certvalidation)
+        do_api_unpw_headers = {'content-type': 'application/json'}
+        do_api_unpw_r = requests.get(do_api_unpw_url, headers=do_api_unpw_headers, auth=(do_api_unpw_user, do_api_unpw_password), verify=do_api_certvalidation)
         # We'll be discarding the actual `Response` object after this, but we do want to get HTTP status for erro handling
         response_code = do_api_unpw_r.status_code
-        do_api_unpw_r.raise_for_status() #trigger an exception before trying to convert or read data. This should allow us to get good error info
-        return do_api_unpw_r.json() #if HTTP status is good, i.e. a 100/200 status code, we're going to convert the response into a json dict
+        do_api_unpw_r.raise_for_status()  # trigger an exception before trying to convert or read data. This should allow us to get good error info
+        return do_api_unpw_r.json()  # if HTTP status is good, i.e. a 100/200 status code, we're going to convert the response into a json dict
     except:
         if httperrors.get(response_code):
-            print('HTTP Status Error ' + str(response_code) + ' ' + httperrors.get(response_code)[max(min(args.verbosity,1),0)])
-            exit() #interpet the error, then close out so we don't have to put all the rest of our code in an except statement
+            print('HTTP Status Error ' + str(response_code) + ' ' + httperrors.get(response_code)[max(min(args.verbosity, 1), 0)])
+            exit()  # interpet the error, then close out so we don't have to put all the rest of our code in an except statement
         else:
-            print('Unhandled HTTP Error ' + str(response_code) + '!' )
-            exit() #interpet the error, then close out so we don't have to put all the rest of our code in an except statement
+            print('Unhandled HTTP Error ' + str(response_code) + '!')
+            exit()  # interpet the error, then close out so we don't have to put all the rest of our code in an except statement
+
 
 # Do API POST
 # Send a json payload via the requests API
 def do_api_post_unpw(do_api_unpw_user, do_api_unpw_password, do_api_unpw_url, do_api_unpw_payload, do_api_certvalidation):
     # Perform API Processing - conditional basic authentication
     try: 
-        do_api_unpw_headers = {'content-type':'application/json'}
-        do_api_unpw_r = requests.post(do_api_unpw_url,data=json.dumps(do_api_unpw_payload), headers=do_api_unpw_headers,auth=(do_api_unpw_user,do_api_unpw_password), verify=do_api_certvalidation)
+        do_api_unpw_headers = {'content-type': 'application/json'}
+        do_api_unpw_r = requests.post(do_api_unpw_url,data=json.dumps(do_api_unpw_payload), headers=do_api_unpw_headers,auth=(do_api_unpw_user, do_api_unpw_password), verify=do_api_certvalidation)
         # We'll be discarding the actual `Response` object after this, but we do want to get HTTP status for erro handling
         response_code = do_api_unpw_r.status_code
         do_api_unpw_r.raise_for_status() #trigger an exception before trying to convert or read data. This should allow us to get good error info
         return do_api_unpw_r.json() #if HTTP status is good, i.e. a 100/200 status code, we're going to convert the response into a json dict
     except:
         if httperrors.get(response_code):
-            print('HTTP Status Error ' + str(response_code) + ' ' + httperrors.get(response_code)[max(min(args.verbosity,1),0)])
-            exit() #interpet the error, then close out so we don't have to put all the rest of our code in an except statement
+            print('HTTP Status Error ' + str(response_code) + ' ' + httperrors.get(response_code)[max(min(args.verbosity, 1), 0)])
+            exit()  # interpet the error, then close out so we don't have to put all the rest of our code in an except statement
         else:
-            print('Unhandled HTTP Error ' + str(response_code) + '!' )
-            exit() #interpet the error, then close out so we don't have to put all the rest of our code in an except statement
+            print('Unhandled HTTP Error ' + str(response_code) + '!')
+            exit()  # interpet the error, then close out so we don't have to put all the rest of our code in an except statement
+
+
 def do_api_post_cert(do_api_cert_client, do_api_cert_pkey, do_api_cert_ca, do_api_cert_user, do_api_cert_password, do_api_cert_url, do_api_cert_payload):
     try: 
-        do_api_unpw_headers = {'content-type':'application/json'}
-        do_api_cert_r = requests.post(do_api_cert_url,data=json.dumps(do_api_cert_payload), headers=do_api_unpw_headers,auth=(do_api_cert_user,do_api_cert_password),cert=(do_api_cert_client,do_api_cert_pkey),verify=do_api_cert_ca)
+        do_api_unpw_headers = {'content-type': 'application/json'}
+        do_api_cert_r = requests.post(do_api_cert_url,data=json.dumps(do_api_cert_payload), headers=do_api_unpw_headers, auth=(do_api_cert_user, do_api_cert_password), cert=(do_api_cert_client, do_api_cert_pkey), verify=do_api_cert_ca)
         # We'll be discarding the actual `Response` object after this, but we do want to get HTTP status for erro handling
         response_code = do_api_cert_r.status_code
-        do_api_cert_r.raise_for_status() #trigger an exception before trying to convert or read data. This should allow us to get good error info
-        return do_api_cert_r.json() #if HTTP status is good, i.e. a 100/200 status code, we're going to convert the response into a json dict
+        do_api_cert_r.raise_for_status()  # trigger an exception before trying to convert or read data. This should allow us to get good error info
+        return do_api_cert_r.json()  # if HTTP status is good, i.e. a 100/200 status code, we're going to convert the response into a json dict
     except:
         if httperrors.get(response_code):
             print ('HTTP Status Error ' + str(response_code) + ' ' + httperrors.get(response_code)[max(min(args.verbosity,1),0)])
@@ -68,6 +71,7 @@ def do_api_post_cert(do_api_cert_client, do_api_cert_pkey, do_api_cert_ca, do_ap
         else:
             print ('Unhandled HTTP Error ' + str(response_code) + '!' )
             exit() #interpet the error, then close out so we don't have to put all the rest of our code in an except statement
+
 
 # Open a json payload file
 def get_json_from_file(get_json_from_file_name):
@@ -87,6 +91,7 @@ def get_json_from_file(get_json_from_file_name):
         print('An unexpected error has occurred!')
         exit()
 
+
 # References
 
 # Set HTTP Error + Verbosity table. Due to the use of max(min()), verbosity count becomes a numerical range that caps off and prevents array issues
@@ -94,66 +99,66 @@ def get_json_from_file(get_json_from_file_name):
 httperrors = {
     100: ('Continue', 'Request received, please continue'),
     101: ('Switching Protocols',
-        'Switching to new protocol; obey Upgrade header'),
+          'Switching to new protocol; obey Upgrade header'),
 
     200: ('OK', 'Request fulfilled, document follows'),
     201: ('Created', 'Document created, URL follows'),
     202: ('Accepted',
-        'Request accepted, processing continues off-line'),
+          'Request accepted, processing continues off-line'),
     203: ('Non-Authoritative Information', 'Request fulfilled from cache'),
     204: ('No Content', 'Request fulfilled, nothing follows'),
     205: ('Reset Content', 'Clear input form for further input.'),
     206: ('Partial Content', 'Partial content follows.'),
 
     300: ('Multiple Choices',
-        'Object has several resources -- see URI list'),
+          'Object has several resources -- see URI list'),
     301: ('Moved Permanently', 'Object moved permanently -- see URI list'),
     302: ('Found', 'Object moved temporarily -- see URI list'),
     303: ('See Other', 'Object moved -- see Method and URL list'),
     304: ('Not Modified',
-        'Document has not changed since given time'),
+          'Document has not changed since given time'),
     305: ('Use Proxy',
-        'You must use proxy specified in Location to access this '
-        'resource.'),
+          'You must use proxy specified in Location to access this '
+          'resource.'),
     307: ('Temporary Redirect',
-        'Object moved temporarily -- see URI list'),
+          'Object moved temporarily -- see URI list'),
 
     400: ('Bad Request',
-        'Bad request syntax or unsupported method'),
+          'Bad request syntax or unsupported method'),
     401: ('Unauthorized',
-        'No permission -- see authorization schemes'),
+          'No permission -- see authorization schemes'),
     402: ('Payment Required',
-        'No payment -- see charging schemes'),
+          'No payment -- see charging schemes'),
     403: ('Forbidden',
-        'Request forbidden -- authorization will not help'),
+          'Request forbidden -- authorization will not help'),
     404: ('Not Found', 'Nothing matches the given URI'),
     405: ('Method Not Allowed',
-        'Specified method is invalid for this server.'),
+          'Specified method is invalid for this server.'),
     406: ('Not Acceptable', 'URI not available in preferred format.'),
     407: ('Proxy Authentication Required', 'You must authenticate with '
-        'this proxy before proceeding.'),
+          'this proxy before proceeding.'),
     408: ('Request Timeout', 'Request timed out; try again later.'),
     409: ('Conflict', 'Request conflict.'),
     410: ('Gone',
-        'URI no longer exists and has been permanently removed.'),
+          'URI no longer exists and has been permanently removed.'),
     411: ('Length Required', 'Client must specify Content-Length.'),
     412: ('Precondition Failed', 'Precondition in headers is false.'),
     413: ('Request Entity Too Large', 'Entity is too large.'),
     414: ('Request-URI Too Long', 'URI is too long.'),
     415: ('Unsupported Media Type', 'Entity body in unsupported format.'),
     416: ('Requested Range Not Satisfiable',
-        'Cannot satisfy request range.'),
+          'Cannot satisfy request range.'),
     417: ('Expectation Failed',
-        'Expect condition could not be satisfied.'),
+          'Expect condition could not be satisfied.'),
 
     500: ('Internal Server Error', 'Server got itself in trouble'),
     501: ('Not Implemented',
-        'Server does not support this operation'),
+          'Server does not support this operation'),
     502: ('Bad Gateway', 'Invalid responses from another server/proxy.'),
     503: ('Service Unavailable',
-        'The server cannot process the request due to a high load'),
+          'The server cannot process the request due to a high load'),
     504: ('Gateway Timeout',
-        'The gateway server did not receive a timely response'),
+          'The gateway server did not receive a timely response'),
     505: ('HTTP Version Not Supported', 'Cannot fulfill request.'),
 }
 
