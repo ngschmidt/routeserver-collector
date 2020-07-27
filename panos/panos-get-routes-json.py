@@ -125,8 +125,8 @@ def do_api_get_auth_key(do_api_get_auth_key_user, do_api_get_auth_key_password, 
 def get_xml_from_file(get_xml_from_file_name):
     # Attempt to load a json file, and lint it
     try:
-        with open(get_xml_from_file_name) as xml_file:
-            return ElementTree.parse(xml_file)
+        with open(get_xml_from_file_name) as file_contents_string:
+            return file_contents_string.read()
     except ValueError as err:
         print('Python thinks you have a xml formatting issue. Please run your payload input through a xml linter.')
         print(err)
@@ -258,3 +258,6 @@ except:
 # Let's try getting an API key first
 session_auth_key = do_api_get_auth_key(args.u, args.p, args.api_endpoint, args.k)
 print(session_auth_key)
+
+# Let's try parsing an payload
+print(get_xml_from_file(args.f))
