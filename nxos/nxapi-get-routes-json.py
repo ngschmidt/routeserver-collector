@@ -53,90 +53,90 @@ def do_api_cert(do_api_cert_client, do_api_cert_pkey, do_api_cert_ca, do_api_cer
 
 #### Open a json payload file
 def get_json_from_file(get_json_from_file_name):
-      # Attempt to load a json file, and lint it
-      try:
-            with open(get_json_from_file_name) as json_file:
-                  return json.load(json_file)
-      except ValueError as err:
-            print('Python thinks you have a json formatting issue. Please run your payload input through a json linter.')
-            print(err)
-            exit()
-      except IOError as err:
-            print('A File I/O error has occurred. Please check your file path!')
-            print(err)
-            exit()
-      except:
-            print('An unexpected error has occurred!')
-            exit()
+    # Attempt to load a json file, and lint it
+    try:
+        with open(get_json_from_file_name) as json_file:
+            return json.load(json_file)
+    except ValueError as err:
+        print('Python thinks you have a json formatting issue. Please run your payload input through a json linter.')
+        print(err)
+        exit()
+    except IOError as err:
+        print('A File I/O error has occurred. Please check your file path!')
+        print(err)
+        exit()
+    except:
+        print('An unexpected error has occurred!')
+        exit()
 
 # References
 
 # Set HTTP Error + Verbosity table. Due to the use of max(min()), verbosity count becomes a numerical range that caps off and prevents array issues
 # Credit where due - https://gist.github.com/bl4de/3086cf26081110383631 by bl4de
 httperrors = {
-  100: ('Continue', 'Request received, please continue'),
-  101: ('Switching Protocols',
+    100: ('Continue', 'Request received, please continue'),
+    101: ('Switching Protocols',
         'Switching to new protocol; obey Upgrade header'),
 
-  200: ('OK', 'Request fulfilled, document follows'),
-  201: ('Created', 'Document created, URL follows'),
-  202: ('Accepted',
+    200: ('OK', 'Request fulfilled, document follows'),
+    201: ('Created', 'Document created, URL follows'),
+    202: ('Accepted',
         'Request accepted, processing continues off-line'),
-  203: ('Non-Authoritative Information', 'Request fulfilled from cache'),
-  204: ('No Content', 'Request fulfilled, nothing follows'),
-  205: ('Reset Content', 'Clear input form for further input.'),
-  206: ('Partial Content', 'Partial content follows.'),
+    203: ('Non-Authoritative Information', 'Request fulfilled from cache'),
+    204: ('No Content', 'Request fulfilled, nothing follows'),
+    205: ('Reset Content', 'Clear input form for further input.'),
+    206: ('Partial Content', 'Partial content follows.'),
 
-  300: ('Multiple Choices',
+    300: ('Multiple Choices',
         'Object has several resources -- see URI list'),
-  301: ('Moved Permanently', 'Object moved permanently -- see URI list'),
-  302: ('Found', 'Object moved temporarily -- see URI list'),
-  303: ('See Other', 'Object moved -- see Method and URL list'),
-  304: ('Not Modified',
+    301: ('Moved Permanently', 'Object moved permanently -- see URI list'),
+    302: ('Found', 'Object moved temporarily -- see URI list'),
+    303: ('See Other', 'Object moved -- see Method and URL list'),
+    304: ('Not Modified',
         'Document has not changed since given time'),
-  305: ('Use Proxy',
+    305: ('Use Proxy',
         'You must use proxy specified in Location to access this '
         'resource.'),
-  307: ('Temporary Redirect',
+    307: ('Temporary Redirect',
         'Object moved temporarily -- see URI list'),
 
-  400: ('Bad Request',
+    400: ('Bad Request',
         'Bad request syntax or unsupported method'),
-  401: ('Unauthorized',
+    401: ('Unauthorized',
         'No permission -- see authorization schemes'),
-  402: ('Payment Required',
+    402: ('Payment Required',
         'No payment -- see charging schemes'),
-  403: ('Forbidden',
+    403: ('Forbidden',
         'Request forbidden -- authorization will not help'),
-  404: ('Not Found', 'Nothing matches the given URI'),
-  405: ('Method Not Allowed',
+    404: ('Not Found', 'Nothing matches the given URI'),
+    405: ('Method Not Allowed',
         'Specified method is invalid for this server.'),
-  406: ('Not Acceptable', 'URI not available in preferred format.'),
-  407: ('Proxy Authentication Required', 'You must authenticate with '
+    406: ('Not Acceptable', 'URI not available in preferred format.'),
+    407: ('Proxy Authentication Required', 'You must authenticate with '
         'this proxy before proceeding.'),
-  408: ('Request Timeout', 'Request timed out; try again later.'),
-  409: ('Conflict', 'Request conflict.'),
-  410: ('Gone',
+    408: ('Request Timeout', 'Request timed out; try again later.'),
+    409: ('Conflict', 'Request conflict.'),
+    410: ('Gone',
         'URI no longer exists and has been permanently removed.'),
-  411: ('Length Required', 'Client must specify Content-Length.'),
-  412: ('Precondition Failed', 'Precondition in headers is false.'),
-  413: ('Request Entity Too Large', 'Entity is too large.'),
-  414: ('Request-URI Too Long', 'URI is too long.'),
-  415: ('Unsupported Media Type', 'Entity body in unsupported format.'),
-  416: ('Requested Range Not Satisfiable',
+    411: ('Length Required', 'Client must specify Content-Length.'),
+    412: ('Precondition Failed', 'Precondition in headers is false.'),
+    413: ('Request Entity Too Large', 'Entity is too large.'),
+    414: ('Request-URI Too Long', 'URI is too long.'),
+    415: ('Unsupported Media Type', 'Entity body in unsupported format.'),
+    416: ('Requested Range Not Satisfiable',
         'Cannot satisfy request range.'),
-  417: ('Expectation Failed',
+    417: ('Expectation Failed',
         'Expect condition could not be satisfied.'),
 
-  500: ('Internal Server Error', 'Server got itself in trouble'),
-  501: ('Not Implemented',
+    500: ('Internal Server Error', 'Server got itself in trouble'),
+    501: ('Not Implemented',
         'Server does not support this operation'),
-  502: ('Bad Gateway', 'Invalid responses from another server/proxy.'),
-  503: ('Service Unavailable',
+    502: ('Bad Gateway', 'Invalid responses from another server/proxy.'),
+    503: ('Service Unavailable',
         'The server cannot process the request due to a high load'),
-  504: ('Gateway Timeout',
+    504: ('Gateway Timeout',
         'The gateway server did not receive a timely response'),
-  505: ('HTTP Version Not Supported', 'Cannot fulfill request.'),
+    505: ('HTTP Version Not Supported', 'Cannot fulfill request.'),
 }
 
 # Arguments Parsing
@@ -158,30 +158,30 @@ args = parser.parse_args()
 # Ensure that NX-API Endpoint is a valid one
 validate = URLValidator()
 try:
-  validate(args.nxapi_endpoint)
+    validate(args.nxapi_endpoint)
 except:
-  print('Invalid URL. Please try a valid URL. Example: "http://10.1.1.1/ins"')
-  exit()
+    print('Invalid URL. Please try a valid URL. Example: "http://10.1.1.1/ins"')
+    exit()
 
 # Get system information, ensure that you have a good endpoint
 ## JSON Payload to check version data
 precheck_payload={
-  "ins_api": {
+    "ins_api": {
     "version": "1.0",
     "type": "cli_show",
     "chunk": "0",
     "sid": "sid",
     "input": "show version",
     "output_format": "json"
-  }
+    }
 }
 precheck = do_api_unpw(args.u, args.p, args.nxapi_endpoint, precheck_payload)
 try:
-      print('Found NX-API Endpoint! System Name: ' + precheck['ins_api']['outputs']['output']['body']['host_name'])
-      print('Chassis: ' + precheck['ins_api']['outputs']['output']['body']['chassis_id'])
-      print('Version: ' + precheck['ins_api']['outputs']['output']['body']['nxos_ver_str'])
+    print('Found NX-API Endpoint! System Name: ' + precheck['ins_api']['outputs']['output']['body']['host_name'])
+    print('Chassis: ' + precheck['ins_api']['outputs']['output']['body']['chassis_id'])
+    print('Version: ' + precheck['ins_api']['outputs']['output']['body']['nxos_ver_str'])
 except:
-      print('API Endpoint did not respond to test query with valid data. Please try again on a valid NX-API endpoint.')
+    print('API Endpoint did not respond to test query with valid data. Please try again on a valid NX-API endpoint.')
 
 # Create a JSON file if a developer wants to use this from the python code (it's sometimes easier)
 #with open('payload_show_ip_route_vrf_all.json', 'w') as outfile:
@@ -192,10 +192,10 @@ route_tables = do_api_unpw(args.u,args.p,args.nxapi_endpoint,get_json_from_file(
 # Begin Processing API Data - Parsing Route Tables
 ## Debugging shouldn't require code changes, let's use our verbosity switches
 if max(min(args.verbosity,1),0) >= 1:
-      print (route_tables) #print raw json response
+    print (route_tables) #print raw json response
 
 # iterate through all route tables, and print them
 for i in route_tables['ins_api']['outputs']['output']['body']['TABLE_vrf']['ROW_vrf']:
-      print(i['vrf-name-out'] + ': ')
-      for ii in i['TABLE_addrf']['ROW_addrf']['TABLE_prefix']['ROW_prefix']: 
-            print(ii)
+    print(i['vrf-name-out'] + ': ')
+    for ii in i['TABLE_addrf']['ROW_addrf']['TABLE_prefix']['ROW_prefix']: 
+        print(ii)
