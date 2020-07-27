@@ -197,7 +197,7 @@ route_tables = do_api_unpw(args.u, args.p, args.nxapi_endpoint, get_json_from_fi
 # Begin Processing API Data - Parsing Route Tables
 # Debugging shouldn't require code changes, let's use our verbosity switches
 if max(min(args.verbosity, 1), 0) >= 1:
-    print(route_tables) #print raw json response
+    print(route_tables)  # print raw json response
 
 # iterate through all route tables, and print them
 for i in route_tables['ins_api']['outputs']['output']['body']['TABLE_vrf']['ROW_vrf']:
