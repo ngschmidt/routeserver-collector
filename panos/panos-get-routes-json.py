@@ -284,5 +284,12 @@ xml_payload = get_xml_from_file(args.f)
 validate_xml_from_string(xml_payload)
 
 # Let's try deploying the payload!
-route_table = validate_xml_from_string(do_api_get_opcmd_key(session_auth_key, args.api_endpoint, xml_payload, args.k))
-print(route_table)
+route_tables = validate_xml_from_string(do_api_get_opcmd_key(session_auth_key, args.api_endpoint, xml_payload, args.k))
+
+# Begin Processing API Data - Parsing Route Tables
+# Debugging shouldn't require code changes, let's use our verbosity switches
+if max(min(args.verbosity, 1), 0) >= 1:
+    print(route_tables)  # print raw json response
+
+for i in route_tables['response']['result']['entry']:
+    print(i)
